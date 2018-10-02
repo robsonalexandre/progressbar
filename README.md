@@ -5,13 +5,15 @@ Shell script que exibe a execução de um script principal ou uma lista de coman
 
 ## Modo de Uso
 Basicamente a sintaxe de uso da progressbar é ao longo do script atualizar o progresso através de:
+
 `setprogress [int parcial(%)] [str Mensagem exibida]`
 
 ![ProgressBar](img/progressbar.gif)
 
 1. Chamando de dentro do script principal (main)
 
-```#!/bin/bash
+```
+#!/bin/bash
 source progressbar
 
 
@@ -40,12 +42,12 @@ comando n
 
 3. Chamando a progressbar e passando como parâmetro, uma lista de comandos
 
-`bash progressbar 'comando; setprogress 8 Executando Comando 1; comando 1; setprogress 86 Finalizando comandos; comando n'`
+`bash progressbar 'comando; setprogress 8 Executando Comando 1; comando 1; setprogress 86 Finalizando...; comando n'`
 
 ## Função progressBar
 
-A função progressbar() utiliza tput e printf para criar uma barra de progresso preenchendo toda a largura do terminal que executa e roda com os seguintes parâmetros:
+A função __progressbar()__ utiliza tput e printf para criar uma barra de progresso preenchendo toda a largura do terminal que executa e roda com os seguintes parâmetros:
 
 `progressbar <int partial> [[int total] str mensagem]`
 
-Caso as variaveis total e mensagem estejam indefinidas, assumem os valores total=100 e msg=Progress
+Caso as variáveis **total** e **mensagem** estejam indefinidas, assumem os valores **total=100** e **msg=Progress**
