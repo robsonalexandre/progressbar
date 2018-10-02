@@ -1,0 +1,82 @@
+#!/bin/bash
+#/**
+# * @link      https://github.com/robsonalexandre/progressbar
+# * @license   https://www.gnu.org/licenses/gpl-3.0.txt GNU GENERAL PUBLIC LICENSE
+# * @author    Robson Alexandre <alexandrerobson@gmail.com>
+# */
+function setup() {
+  tmp=$(mktemp -d)
+  fifo=$(mktemp -u --tmpdir=$tmp)
+  log=$(mktemp --tmpdir=$tmp)
+  mkfifo $fifo
+  exec 3<>$fifo
+  tput civis
+}
+
+function cleanup() {
+  tput el
+  echo -e "Concluído [100%]"
+  tput cnorm
+}
+trap cleanup EXIT KILL
+
+function setprogress() {
+  [[ $# -gt 0 ]] && echo $@ >&3
+}
+export -f setprogress
+
+# Exemplos de progressbar
+# estilo apt upgrade
+# Progress: [ 60%] [#####################..............................]
+# estilo wget
+# linux-4.15.18.tar.xz  45%[============>        ] 44,18M 5,97MB/s eta 7s
+function progressbar() {
+  local partial=$1 \
+        total=${2:-100} \
+        msg=${3:-Progress:} \
+        cols offset
+
+  cols=$(tput cols)
+  percento=$((partial*100/total))
+  ((percento>100)) && percento=100
+  offset=$((cols-${#msg}-10))
+  strcompleto=$(printf "%0.s=" $(eval echo {1..$cols}))
+  strcomplemento=$(printf "%0.s." $(eval echo {1..$cols}))
+  intcompleto=$((percento*offset/total))
+  intcomplemento=$((offset-intcompleto))
+  printf "\r\e[0;30m\e[42m%s [%3d%%]\e[0m [%.*s%.*s]\r" \
+    "$msg" \
+    $percento \
+    $intcompleto $strcompleto \
+    $intcomplemento $strcomplemento
+}
+
+function runprogress() {
+  local msg total=100
+  while :; do
+    ((++i%20==0)) && ((nivel++))
+    read -t.1 -u 3 n
+    n=${n:-$nivel}
+    str=$(sed -r 's/^[0-9]+ *//' <<< $n)
+    [[ -n "${str}" ]] && { n=$(grep -oE '^[0-9]+' <<< $n); msg=$str; }
+    ((n>nivel)) && nivel=$n
+    ps -p $pid > /dev/null || break
+    progressbar "$nivel" "$total" "$msg"
+  done
+}
+
+setup
+if [[ $# -gt 0 ]]; then
+# run script params
+  [ -f "$1" ] && {
+    bash $* >$log 2>&1 &
+  } || {
+    bash -c "$*" &
+  }
+  pid=$!
+  runprogress
+else
+# source inside main script
+  pid=$$
+  runprogress &
+fi

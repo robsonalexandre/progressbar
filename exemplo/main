@@ -1,0 +1,20 @@
+#!/bin/bash
+source progressbar
+
+comando
+setprogress 8 Iniciando Comando 1
+comando 1
+setprogress 12 "Verificando dependências (Comando 2)"
+comando 2
+setprogress 23 Atualizando Comando 3
+comando 3
+setprogress 37 Configurando Comandos 4,5,etc...
+comando 4
+setprogress 49
+comando 5
+setprogress 66
+comando 6
+setprogress 72 Removendo arquivos temporários
+comando ...
+setprogress 86 Finalizando o script principal
+comando n
