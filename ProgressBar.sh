@@ -47,15 +47,15 @@ ProgressBar.init() {
   ProgressBar.print() {
     local partial=$1 \
           total=${2:-100} \
-          msg=${3:-Progress:} \
+          msg=${3:-Progress} \
           cols offset p percento pad bar_on bar_off
 
     cols=$(tput cols)
     p=$((partial*100/total))
     percento=$((p>100?100:p))
-    offset=$((cols-${#msg}-10))
+    offset=$((cols-${#msg}-11))
 
-    printf -v pad '%*s' $((percento*offset/total))
+    printf -v pad '%*s' $((percento*offset/100))
     bar_on=${pad// /$bar_char_on}
     printf -v pad '%*s' $((offset-${#bar_on}))
     bar_off=${pad// /$bar_char_off}
@@ -83,7 +83,7 @@ ProgressBar.init() {
       fi
       msg="${str:-$msg}"
 
-#      ProgressBar.checkProcess && break
+      #      ProgressBar.checkProcess && break
       #   Se processo em bg concluir, ou
       #     não tiver processo em bg e nivel chegar a 100,
       #     termina barra de progresso
@@ -124,7 +124,7 @@ ProgressBar.init() {
   bar_progress_color='\e[37;1m'              # fg=Negrito Branco; bg=
   bar_text_color='\e[0;30m\e[42m'            # fg=Preto; bg=Verde
   normal_color='\e[0m'
-  bar_format="${bar_text_color}%s [%3d%%]${normal_color} ${bar_progress_color}[%s%s]${normal_color}\r"
+  bar_format="${bar_text_color}%s: [%3d%%]${normal_color} ${bar_progress_color}[%s%s]${normal_color}\r"
   bar_forward_default=1000
   declare -A speed=(
     [fast]=20
